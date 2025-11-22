@@ -1,32 +1,36 @@
-from langchain_openai import ChatOpenAI
+import requests
 from dotenv import load_dotenv
-from langchain_core.tools import tool
 from langchain.agents import create_agent
-from langchain_community.tools import TavilySearchResults
-import datetime
+from langchain.tools import tool
 
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4.1-mini")
-
-search_tool = TavilySearchResults(search_depth="basic")
-
-@tool
-def get_system_time(format: str = "%Y-%m-%d %H:%M:%S"):
-    """ Returns the current date and time in the specified format """
-
-    current_time = datetime.datetime.now()
-    formatted_time = current_time.strftime(format)
-    return formatted_time
-
-
-tools = [search_tool, get_system_time]
-
-agent = create_agent(
-    model=llm, 
-    tools=tools,
-    system_prompt="You are a helpful assistant with access to web search and system time tools."
+@tool('get_weather', return_direct=False, description="Get the current weather for a given city.")
+def get_weather(city: str) -> str:
+    # """Fetches the current weather for the specified city using a mock API."""
+    # # Mock API URL (replace with a real weather API endpoint)
+    # api_url = f"https://wttr.in/{city}?format=j1"
+    # response = requests.get(api_url)
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     return f"The current temperature in {city} is {data['temperature']}°C with {data['description']}."
+    # else:
+        return "temparture in vienna  today is 35 degree centigrade."
+    
+agent=create_agent(
+    model="gpt-4o",
+    tools=[get_weather],
+    
+    system_prompt="you are the helful assistant that can provide weather information using the get_weather tool when necessary."
 )
 
-agent.invoke({"input": "When was SpaceX's last launch and how many days ago was that from this instant"})
 
+res=agent.invoke({
+    'messages': [
+        {"role": "user", "content": "What is the weather like in vienna today?"}
+    ]
+}
+    
+    
+)
+print(res)
