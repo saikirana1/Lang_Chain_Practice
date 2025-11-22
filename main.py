@@ -1,6 +1,5 @@
-def main():
-    print("Hello from lang-chain-practice!")
+from .lang_graph.wetheer_in_ongole import wetheer_in_ongole   
 
 
-if __name__ == "__main__":
-    main()
+t=wetheer_in_ongole()
+print(t)
